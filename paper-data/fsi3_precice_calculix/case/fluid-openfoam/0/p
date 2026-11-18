@@ -1,0 +1,20 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+
+dimensions      [0 2 -2 0 0 0 0];
+internalField   uniform 0;
+
+boundaryField
+{
+    outlet              { type fixedValue; value uniform 0; }
+    frontAndBackPlanes  { type empty; }
+    // flag: pressure gradient consistent with the moving-wall flux, dp/dn = -rho n.a_wall
+    // (corrected set-up; plain-OpenFOAM counterpart of solids4foam movingWallPressure)
+    plate               { type fixedFluxPressure; value uniform 0; }
+    ".*"                { type zeroGradient; }
+}

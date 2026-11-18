@@ -1,0 +1,8 @@
+quantity,unit,mean_maxmin,amplitude,last_period_mean,last_period_amplitude,amplitude_range_over_periods,featflow_mean,featflow_amplitude
+ux,mm,-2.74978,2.63036,-2.74939,2.62961,0.0022,-2.88,2.72
+uy,mm,1.65465,34.1614,1.6405,34.1614,0.0235,1.47,34.99
+drag,N/m,457.385,25.791,457.367,25.7919,0.0159,460.5,27.74
+lift,N/m,1.02784,162.621,0.982212,162.608,0.0843,2.5,153.91
+frequency,Hz,5.52188,,,,,5.46,
+window_start,s,4.95176,,,,,,
+window_end,s,5.85725,,,,,,
