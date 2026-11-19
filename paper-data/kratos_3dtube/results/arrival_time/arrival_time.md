@@ -2,9 +2,11 @@
 
 Front rules of the solids4foam driver: wall arrival is the first upward crossing of 50% of the station's incident peak (the first local maximum above 50% of the history maximum); pressure arrival is the first crossing of 50% of the inlet pressure.
 
+The solids4foam values are old-mesh values, from the tube meshes of commit `a421f063d`, which round the wall arcs to four digits. The corrected meshes move them by 0.1–0.35%.
+
 ## Wall arrival per station (ms), matched levels
 
-| z (mm) | Kratos L1 | s4f L1 | diff | Kratos L2 | s4f L2 | diff | s4f L3 |
+| z (mm) | Kratos L1 | s4f L1 (old mesh) | diff | Kratos L2 | s4f L2 (old mesh) | diff | s4f L3 (old mesh) |
 |---|---|---|---|---|---|---|---|
 | 5 | 1.195 | 1.181 | +0.013 | 1.206 | 1.194 | +0.012 | 1.201 |
 | 10 | 2.432 | 2.401 | +0.030 | 2.456 | 2.435 | +0.021 | 2.448 |
@@ -23,10 +25,10 @@ Beyond 30 mm the incident front merges with the reflection from the clamped outl
 | | level 1 | level 2 | level 3 |
 |---|---|---|---|
 | Kratos | 4.203 | 4.238 | – |
-| solids4foam | 4.263 | 4.302 | 4.326 |
+| solids4foam (old mesh) | 4.263 | 4.302 | 4.326 |
 | Kratos / solids4foam − 1 | -1.42% | -1.50% | – |
 
-## Level 1 against the solids4foam level-1 rerun (full histories to 10 ms)
+## Level 1 against the solids4foam level-1 rerun (old mesh, full histories to 10 ms)
 
 Crossing-time difference Kratos − solids4foam (ms) at fractions of each code's own incident peak; the least-squares time shift that aligns the two incident fronts over the 3 ms before the solids4foam peak; and the pressure arrival (the solids4foam axis probes take the value of the containing cell, so they carry up to half a cell of position error).
 

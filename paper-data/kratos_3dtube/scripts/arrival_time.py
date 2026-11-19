@@ -82,7 +82,9 @@ def main():
     L = ["# 3dTube arrival times, Kratos against solids4foam\n",
          "Front rules of the solids4foam driver: wall arrival is the first upward crossing of 50% of the "
          "station's incident peak (the first local maximum above 50% of the history maximum); pressure "
-         "arrival is the first crossing of 50% of the inlet pressure.\n"]
+         "arrival is the first crossing of 50% of the inlet pressure.\n",
+         "The solids4foam values are old-mesh values, from the tube meshes of commit `a421f063d`, which "
+         "round the wall arcs to four digits. The corrected meshes move them by 0.1–0.35%.\n"]
 
     # 1. Wall arrivals per station against the solids4foam mesh study
     arrivals = {}
@@ -90,7 +92,8 @@ def main():
         _, wall, _ = kratos(run)
         arrivals[lev] = {z: drv.front_arrival(wall[z], ref) for z in Z_MM}
     L.append("## Wall arrival per station (ms), matched levels\n")
-    L.append("| z (mm) | Kratos L1 | s4f L1 | diff | Kratos L2 | s4f L2 | diff | s4f L3 |")
+    L.append("| z (mm) | Kratos L1 | s4f L1 (old mesh) | diff | Kratos L2 | s4f L2 (old mesh) | diff "
+             "| s4f L3 (old mesh) |")
     L.append("|---|---|---|---|---|---|---|---|")
     for z in Z_MM:
         k = f"wall_arrival_z{z:02d}mm_s"
@@ -109,7 +112,7 @@ def main():
     ss = [speed(5, float(s4f[l]["wall_arrival_z05mm_s"]), 25, float(s4f[l]["wall_arrival_z25mm_s"]))
           for l in (1, 2, 3)]
     L.append(f"| Kratos | {ks[0]:.3f} | {ks[1]:.3f} | – |")
-    L.append(f"| solids4foam | {ss[0]:.3f} | {ss[1]:.3f} | {ss[2]:.3f} |")
+    L.append(f"| solids4foam (old mesh) | {ss[0]:.3f} | {ss[1]:.3f} | {ss[2]:.3f} |")
     L.append(f"| Kratos / solids4foam − 1 | {100 * (ks[0] / ss[0] - 1):+.2f}% | "
              f"{100 * (ks[1] / ss[1] - 1):+.2f}% | – |\n")
 
@@ -119,7 +122,7 @@ def main():
     s_wall = {z: [(tt, r) for tt, r, _ in drv.displacement_history(_Path(rerun), drv.station_name(z * 1e-3), end)]
               for z in Z_MM[:6]}
     s_p = drv.pressure_histories(_Path(rerun), len(ref["stations_z_m"]), end, float(ref["fluid"]["rho_kg_m3"]))
-    L.append("## Level 1 against the solids4foam level-1 rerun (full histories to 10 ms)\n")
+    L.append("## Level 1 against the solids4foam level-1 rerun (old mesh, full histories to 10 ms)\n")
     L.append("Crossing-time difference Kratos − solids4foam (ms) at fractions of each code's own incident "
              "peak; the least-squares time shift that aligns the two incident fronts over the 3 ms before "
              "the solids4foam peak; and the pressure arrival (the solids4foam axis probes take the value of "

@@ -12,10 +12,15 @@ issue #36.
   own Euler run (22.8%), Lozovskiy et al. (24.7%) and Eken (21.6%) are. The 20–25% gap between the
   published values and solids4foam is first-order time integration, not a code difference.
 - **Step 2.** With BDF2 and Δt halved with the mesh (levels 1 and 2), the Kratos peak rises by 30%, as in
-  solids4foam (30.5%). At level 2 Kratos is within 0.2% of solids4foam's level 3 in u_z,min(A), c_p and
-  the peak time, and 1.5% above it in u_r,max(A).
+  solids4foam (30.5%). At level 2 Kratos is within 0.2% of solids4foam's level 3 in u_z,min(A) and the
+  peak time, 0.23% below it in c_p, and 1.5% above it in u_r,max(A).
 - **Arrival time.** t_arr(A) is 1.4% later in Kratos at matched levels. The definition is the same; the
   difference is a wall front that travels 1.4–1.5% slower between z = 5 and 25 mm at both levels.
+
+The solids4foam values in this folder are old-mesh values, from the tube meshes of commit `a421f063d`,
+which round the wall arcs to four digits. solids4foam has since corrected its meshes, which moves its
+values by 0.1–0.35%. The comparisons, those with level 3 in particular, are to be updated with the
+corrected values.
 
 ## Code and platform
 
@@ -44,8 +49,8 @@ the tube is modelled. Point A is on the inner wall at mid-length, (0, 0.005, 0.0
   tetrahedra (two prisms of three tetrahedra, minimum-index rule, conforming). Level 1 has 96 000
   tetrahedra and 18 306 nodes (16 000 hexahedra in solids4foam) and 6 400 wall hexahedra; level 2 has
   768 000 tetrahedra, 137 011 nodes and 51 200 wall hexahedra. Fluid and wall nodes coincide on the
-  interface. The circular arcs use exact coordinates; the solids4foam master tutorial rounds them to four
-  digits, which moves the wall by about 1e-4 of the radius.
+  interface. The circular arcs use exact coordinates; the solids4foam tutorial at `a421f063d` rounds them
+  to four digits, which moves the wall by about 1e-4 of the radius (since corrected in solids4foam).
 - **Fluid.** QSVMS P1/P1 tetrahedra with `dynamic_tau = 1`, Newton tolerance 1e-6 (relative), AMGCL 1e-8.
   Kratos has no 3D quadrilateral wall condition for hexahedral fluid elements, and `TimeIntegratedQSVMS`
   cannot compute the right-hand side alone, which the FSI reactions need.
@@ -93,14 +98,23 @@ the tube is modelled. Point A is on the inner wall at mid-length, (0, 0.005, 0.0
   5e-15 m with the same coupling iterations (`runs/_debug/f1_rec_amg_10steps` against
   `runs/_superseded/f1_dt2.5e-5_bdf2_rec`).
 - **Coupling accelerator.** The level-1 production run (full MVQN, AMG wall) agrees with the full MVQN and
-  direct wall solve to 4e-9 m over the first 50 steps (`runs/_crashed/f1_dt2.5e-5_bdf2`, which stopped at
-  step 51 during a period of faulty memory on the workstation), and `MVQN_recursive` agrees with it to
+  direct wall solve to 4e-9 m over the first 50 steps (`runs/_crashed/f1_dt2.5e-5_bdf2`, which crashed at
+  step 51 on 10 November with the faulty workstation memory, see below), and `MVQN_recursive` agrees with it to
   5e-9 m (`runs/_superseded/f1_dt2.5e-5_bdf2_rec`), both at the 1e-9 m RMS tolerance. `MVQN_recursive`
   needs about 11.5 coupling solves per step against 7.1, so the full MVQN is used.
   `MVQN_randomized_SVD` crashes reproducibly at step 3 in Kratos 10.3.0 (null pointer in
   `KratosFSIApplication.so`) and is not used.
 - **Axis pressure.** The pressure differs by a few Pa between accelerators at the same tolerance, because
   it follows the wall acceleration. It enters only c_p, through the arrival of half the inlet pressure.
+- **Workstation memory.** On 10 November seven Kratos runs crashed with segmentation faults between 22:26
+  and 22:48 UTC, and a memory pattern test then found one faulty region of a few kB (ECC is disabled on
+  this workstation). The workstation was restarted on 11 November at 10:40 UTC, and two passes over 40 GB
+  then found no faulty word. The step-1 runs ran on 10 November between 12:37 and 17:27 UTC, before the
+  first crash. The step-2 runs and all check runs except `_crashed/f1_dt2.5e-5_bdf2` (10 November, 22:13
+  to 22:32 UTC) ran after the restart, between 11 November 15:34 UTC and 13 November 02:08 UTC. A restart
+  does not repair memory, so a silent error cannot be ruled out entirely. No reported run crashed, and the
+  check runs above, with other thread counts, accelerators and wall solvers, agree with them. Times are
+  from the workstation clock.
 
 ## Step 1, implicit Euler, level 1, Δt = 1e-4 s
 
@@ -109,7 +123,7 @@ the tube is modelled. Point A is on the inner wall at mid-length, (0, 0.005, 0.0
 `dynamic_tau = 1`; a run with it from t = 0 (`runs/f1_dt1e-4_euler_dtau1_bfs`) differs by 2.4–2.5% in
 the three displacement extrema.
 
-| QoI | Kratos | Lozovskiy (2019) | Eken (2016) | solids4foam Euler L1 |
+| QoI | Kratos | Lozovskiy (2019) | Eken (2016) | solids4foam Euler L1 (old mesh) |
 |---|---|---|---|---|
 | u_r,max(A) (mm) | 0.12334 | 0.1194 | 0.1242 | 0.12241 |
 | t(u_r,max) (ms) | 7.12 | 7.00 | 6.69 | 7.005 |
@@ -128,23 +142,22 @@ are in `figures/step1_point_A_histories.png`.
 
 Every step met the tolerance except the first step of level 2 (below).
 
-| QoI | Kratos L1 | solids4foam L1 | Kratos L2 | solids4foam L2 | solids4foam L3 |
+| QoI | Kratos L1 | solids4foam L1 (old mesh) | Kratos L2 | solids4foam L2 (old mesh) | solids4foam L3 (old mesh) |
 |---|---|---|---|---|---|
 | u_r,max(A) (mm) | 0.16035 | 0.15978 | 0.16096 | 0.15946 | 0.15851 |
 | t(u_r,max) (ms) | 7.175 | 7.201 | 7.262 | 7.215 | 7.252 |
 | u_z,min(A) (mm) | −0.08198 | −0.08819 | −0.08555 | −0.08659 | −0.08571 |
-| t_arr(A) (ms) | 5.954 | 5.873 | 5.926 | 5.843 | 5.825 |
+| t_arr(A) (ms) | 5.954 | 5.873 | 5.925 | 5.843 | 5.825 |
 | c_p (m/s) | 4.578 | 4.654 | 4.583 | 4.635 | 4.594 |
 
-The solids4foam values are the backward mesh study (`../3dtube_level3_findings.md`, Section 12.6, and
-`../3dtube_level3_ecore/`).
+The solids4foam values are old-mesh values (`a421f063d`) from the backward mesh study
+(`../3dtube_level3_findings.md`, Section 12.6, and `../3dtube_level3_ecore/`).
 
-- **u_z,min.** The 7% gap at level 1 is a mesh effect. The two codes approach from opposite sides, and
-  Kratos level 2 is within 0.2% of solids4foam's level 3.
+- **u_z,min.** The 7% gap at level 1 is consistent with a mesh effect. The two codes approach from
+  opposite sides, and Kratos level 2 is within 0.2% of solids4foam's level 3.
 - **u_r,max.** Kratos is 0.4% above solids4foam at level 1 and 0.9% at level 2, and 1.5% above its level 3.
-  The Kratos peak rises with refinement (+0.4%) while solids4foam's falls (−0.2%, then −0.6%), so neither
-  sequence is asymptotic in the peak.
-- **Timing.** The peak time agrees to 0.1% at the finest levels, and c_p to 0.2% against solids4foam's
+  The Kratos peak rises with refinement (+0.4%) while solids4foam's falls (−0.2%, then −0.6%).
+- **Timing.** The peak time agrees to 0.1% at the finest levels, and c_p is 0.23% below solids4foam's
   level 3. t_arr is discussed below.
 - **Time integration.** The BDF2 peak is 30.0% above the Kratos Euler peak, as in solids4foam (30.5%), so
   step 2 confirms the step-1 conclusion with second-order time integration.
@@ -155,8 +168,11 @@ in `figures/step2_point_A.png`.
 ### First step of level 2
 
 The first step stalled in MVQN. The residual fell to a floor of 1.66e-9 m at iteration 15, drifted up,
-and the step was accepted at 4.3e-8 m after 50 iterations. `results/step2_bdf2/level2_step1_coupling_residuals.csv`
-has the step-1 residuals of four runs with the same mesh and time step.
+and the step was accepted at the limit of 50 iterations with 4.27e-8 m.
+`results/step2_bdf2/level2_step1_coupling_residuals.csv` has the step-1 residuals of four runs with the
+same mesh and time step, as printed in their logs. Kratos prints the residual of iterations 1 to 49 and
+only a warning at the 50th, so the production column ends at iteration 49 (1.76e-7 m). The residual after
+the 50th solve is the one `MainKratos_tube.py` records in `history.csv`.
 
 - With the fluid Newton tolerance at 1e-8 and AMGCL at 1e-10 (`runs/_debug/f2_amg_tight_4steps`, stopped
   in step 1, residuals in its `log.txt`), the residuals follow the production run to a relative 3e-7 up
@@ -176,22 +192,22 @@ has the step-1 residuals of four runs with the same mesh and time step.
 - `tube_qoi.py` takes t_arr from the driver's `front_arrival`, which is the first upward crossing of 50% of the
   incident peak, the incident peak being the first local maximum above 50% of the history maximum.
 - To compare full histories, the solids4foam level 1 was rerun to 10 ms
-  (`./Allverify --quick --cores 1`, OpenFOAM v2606, serial, 590 s). It reproduces the published level 1
-  (t_arr 5.872 against 5.873 ms, identical wall arrivals at every station).
+  (`./Allverify --quick --cores 1`, OpenFOAM v2606, serial, 590 s). It reproduces the published old-mesh
+  level 1 (t_arr 5.872 against 5.873 ms, identical wall arrivals at every station).
   `results/arrival_time/solids4foam_level1_rerun/` has its monitors, settings and driver output.
 - The offset is not a fixed time shift. Kratos minus solids4foam wall arrival grows with distance from the
   inlet, from +0.013 ms at z = 5 mm to +0.081 ms at A (level 1), and from +0.012 to +0.083 ms (level 2).
   The least-squares time shift that aligns the incident fronts at level 1 grows the same way, from
   −0.025 ms at 5 mm to +0.068 ms at A, so the front itself is late, not only its 50% crossing.
 - Between 5 and 25 mm the wall front travels at 4.203 and 4.238 m/s in Kratos (levels 1 and 2) and at
-  4.263, 4.302 and 4.326 m/s in solids4foam (levels 1 to 3). Both codes speed up by about 0.8% per level,
+  4.263, 4.302 and 4.326 m/s in solids4foam (levels 1 to 3, old mesh). Both codes speed up by about 0.8% per level,
   and Kratos stays 1.4–1.5% slower at matched levels. The same gap shows in c_p at matched levels (−1.6%,
   −1.1%).
 - The inputs are the same in both codes (small-strain linear elastic wall, material data, inlet pulse),
-  and solids4foam's Robin–Neumann and IQN-ILS couplings agree to 0.07%. What remains is the
-  discretisation (hexahedral finite elements and P1 QSVMS against cell-centred finite volumes).
+  and solids4foam's Robin–Neumann and IQN-ILS couplings agree to 0.07%. The gap is consistent with a
+  discretisation effect (hexahedral finite elements and P1 QSVMS against cell-centred finite volumes).
 - Tuković et al. (2018), with the same rule, give t_arr(A) = 5.889 ms, between solids4foam level 3
-  (5.825 ms) and Kratos level 2 (5.926 ms).
+  (5.825 ms, old mesh) and Kratos level 2 (5.925 ms).
 - The solids4foam axis-pressure probes take the value of the containing cell. At level 1 the per-station
   pressure arrivals of this rerun (unshifted probes) are about 0.13 ms (one cell) earlier than those of the
   published run with `--probe-z-shift 7.8125e-5`, while c_p differs by 0.2%.
@@ -271,6 +287,7 @@ exactly.
 - The fluid stabilisation (`dynamic_tau = 1`) and the tetrahedral fluid mesh are numerical choices that
   differ from solids4foam. The cause of the 1.4% slower front (wall or fluid discretisation) is not
   separated; a Kratos run with only the wall or only the fluid refined would do it.
+- The solids4foam values are old-mesh values (`a421f063d`) until solids4foam's corrected values replace them.
 - The wall keeps Kratos's BDF2 start from a two-step rest history (see Checks).
 - The first step of level 2 is over the coupling tolerance (see above).
 - The VTK fields (written every 1 ms) and the production `log.txt` files are not included; they are
