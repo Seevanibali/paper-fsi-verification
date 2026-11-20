@@ -1,0 +1,9 @@
+variant,flux_HbyA,level,dx_m,dt_s,uy_A_m,Fy_N_per_m,source
+skew_corrected,skewCorrected linear,1,0.1,0.5,-0.204831,-5.160695,skew_L1/verification/work/aitken/mesh1
+skew_corrected,skewCorrected linear,2,0.05,0.25,-0.231268,-5.233332,skew_L2/verification/work/aitken/mesh2
+skew_corrected,skewCorrected linear,3,0.025,0.125,-0.238225,-5.251155,skew_L3/verification/work/aitken/mesh3
+skew_corrected,skewCorrected linear,4,0.0125,0.0625,-0.239986,-5.256073,skew_L4/verification/work/aitken/mesh4
+linear,linear (default),1,0.1,0.5,-0.204573,-5.152815,lin_L1/verification/work/aitken/mesh1
+linear,linear (default),2,0.05,0.25,-0.231482,-5.239862,lin_L2/verification/work/aitken/mesh2
+linear,linear (default),3,0.025,0.125,-0.238403,-5.256547,lin_L3/verification/work/aitken/mesh3
+linear,linear (default),4,0.0125,0.0625,-0.240111,-5.2598,earlier strict run on the same build and set-up (F_y recorded to four decimals; run directory not retained)

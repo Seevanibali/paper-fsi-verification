@@ -10,6 +10,16 @@ Ansys and COMSOL material models confirmed by E. Tandis on PR #12
 nonlinearity, Ansys as a 3-D slab with symmetry planes front and back,
 COMSOL in 2-D.
 
+**Update, 20 November 2026.** The solids4foam rows of `reference_levels.csv`
+and `reference_richardson.csv` are now the partitioned sequence with a
+skew-corrected continuity flux (`paper-data/cavity_partitioned_skew/`). The
+tables below keep the earlier sequence. With the new sequence:
+
+- **Limits (levels 2–4):** u_y −0.240583 m (order 1.98) and F_y −5.257947 N/m (order 1.86).
+- **Forces:** Tuković agrees to 0.02% (was 0.07%). ANSYS is 0.26% and COMSOL 0.71% above.
+- **COMSOL displacement:** COMSOL is 1.0% above, and 0.55% above at its load.
+- **Displacement ratios:** ANSYS 1.054 and Tuković 1.043, unchanged.
+
 ## The difference to explain
 
 Steady state, point A on the wetted surface of the plate, four levels:

@@ -1,0 +1,7 @@
+solution,uy_limit_m,Fy_limit_N_per_m,skew_minus_solution_uy_percent,skew_minus_solution_Fy_percent,linear_minus_solution_uy_percent,linear_minus_solution_Fy_percent,source
+"SU2 + CalculiX (D. Armfield, pfv#102)",-0.2405588,-5.257784,-0.0100,-0.0031,-0.0465,-0.0533,paper-data/cavity_su2_calculix/comparison/reference_limits.csv (pfv#102)
+"FEniCSx monolithic, M1",-0.2405441802,-5.257801491,-0.0161,-0.0028,-0.0526,-0.0530,paper-data/fenicsx_cavityflexiblebottom/data/coupled_orders.csv
+solids4foam quasi-monolithic #618,-0.24058,-5.257741,-0.0012,-0.0039,-0.0377,-0.0541,computed from paper-data/cavity_monolithic_618/quasi_monolithic_618.csv
+Tukovic2018,-0.25103,-5.25674,+4.1617,-0.0230,+4.1268,-0.0732,paper-data/cavity_plate_material_law/reference_richardson.csv
+Ansys,-0.25364,-5.27189,+5.1479,+0.2645,+5.1133,+0.2144,paper-data/cavity_plate_material_law/reference_richardson.csv
+"COMSOL (plateau, finest two levels)",-0.2431,-5.2954,+1.0354,+0.7073,+0.9993,+0.6574,paper-data/cavity_plate_material_law_findings.md
