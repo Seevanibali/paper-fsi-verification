@@ -1,0 +1,21 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+
+dimensions      [0 2 -2 0 0 0 0];
+internalField   uniform 0;
+
+boundaryField
+{
+    outlet              { type fixedValue; value uniform 0; }
+    frontAndBackPlanes  { type empty; }
+    // flag: fixedFluxPressure. In pimpleFoam on this fixed-value moving wall it gives dp/dn = 0
+    // (HbyA_b = U_b, so constrainPressure sets a zero gradient), i.e. the same as zeroGradient.
+    // It does NOT include the -n.a_wall term of solids4foam movingWallPressure (deviation, see README).
+    plate               { type fixedFluxPressure; value uniform 0; }
+    ".*"                { type zeroGradient; }
+}

@@ -1,0 +1,10 @@
+    cells:            11764
+numberOfSubdomains 4;
+enabled         false;
+endTime         2;
+rigid start 0-2 s: 305 s
+enabled         true;
+endTime         6;
+Terminated
+coupled 2-6 s: 31998 s  (fluid rc 1, solid rc 143)
+total: 32303 s on 5 cores (4 fluid rank(s) + 1 solid process)
