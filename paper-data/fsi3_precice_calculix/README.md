@@ -2,12 +2,13 @@
 
 This is an independent-solid solution of FSI3 (issue #36) at level 1′ only. The solid code and the coupling library are independent of solids4foam. The fluid is OpenFOAM, as in solids4foam, so the route is partly independent.
 
-The set-up follows the solids4foam corrected FSI3 sequence (`hronturek_fsi3_4x_findings.md`, sections 19–21), with two deviations agreed on #75:
+The set-up follows the solids4foam corrected FSI3 sequence (`hronturek_fsi3_4x_findings.md`, sections 19–21), with three deviations:
 
-- **Δt = 1e-3 s, not 5e-4 s.**
-- **CalculiX HHT α = −1/3, not −0.05.**
+- **Δt = 1e-3 s, not 5e-4 s** (agreed on #75).
+- **CalculiX HHT α = −1/3, not −0.05** (agreed on #75).
+- **Flag pressure: dp/dn = 0, not dp/dn = −n·a_wall.** The case uses `fixedFluxPressure`, which in `pimpleFoam` on this moving fixed-value wall gives a zero gradient (HbyA_b = U_b, so `constrainPressure` sets zero), the same as `zeroGradient`. The wall-acceleration term of the solids4foam `movingWallPressure` condition is therefore missing.
 
-Neither was a free choice. With the specified Δt and α, the coupled run is unstable. See [Coupling instability at Δt = 5e-4 s](#coupling-instability-at-δt--5e-4-s). Finer levels were not run: this solver pair cannot follow the constant-Courant path of the corrected sequence (Δt 5e-4 on 1x′–4x′), so they would not be comparable.
+The first two were not free choices. With the specified Δt and α, the coupled run is unstable. See [Coupling instability at Δt = 5e-4 s](#coupling-instability-at-δt--5e-4-s). Finer levels were not run: this solver pair cannot follow the constant-Courant path of the corrected sequence (Δt 5e-4 on 1x′–4x′), so they would not be comparable.
 
 ![FSI3 level 1′ histories and instability tests](fsi3_precice_level1.png)
 
@@ -29,7 +30,7 @@ Neither was a free choice. With the specified Δt and α, the coupled run is uns
 | Inflow | parabola, maximum 3 m/s, impulsive | the same (`codedFixedValue`) |
 | Fluid schemes | `Gauss linear` convection, BDF2, PIMPLE 3/3/1, tolerances 1e-9 | the same, with `leastSquares` gradients |
 | Mesh motion | `displacementLaplacian`, quadratic inverse distance | the same |
-| Flag pressure | `movingWallPressure` (dp/dn = −n·a_wall) | `fixedFluxPressure`. `movingWallPressure` is a solids4foam condition not available to `pimpleFoam`; `fixedFluxPressure` sets the flux-consistent gradient. The tests below show that the choice does not affect the instability. |
+| Flag pressure | `movingWallPressure` (dp/dn = −n·a_wall) | **dp/dn = 0** (deviation): `fixedFluxPressure`, which here reduces to `zeroGradient` (see above). `movingWallPressure` is a solids4foam condition not available to `pimpleFoam`. |
 | Solid time integration | BDF2 | CalculiX `*DYNAMIC, DIRECT` (HHT), **α = −1/3** |
 | Time step | 5e-4 s | **1e-3 s** |
 | Protocol | rigid plate 0–2 s, coupled 2–6 s | the same |
@@ -43,20 +44,28 @@ Point A is a preCICE watch-point at (0.6, 0.2). Drag and lift come from `forces`
 
 Window: t = 4.952–5.857 s. Units: mm, Hz, N/m.
 
-| Quantity | This run | Featflow | Error vs Featflow | solids4foam 1x′ (Δt 5e-4) |
-|---|---:|---:|---:|---:|
-| u_x (max+min)/2 | −2.750 | −2.88 | +4.5 % | −2.859 |
-| u_x amplitude | 2.630 | 2.72 | −3.3 % | 2.754 |
-| u_y (max+min)/2 | 1.655 | 1.47 | +12.6 % | — |
-| u_y amplitude | 34.16 | 34.99 | −2.4 % | 34.62 |
-| frequency | 5.522 | 5.46 | +1.1 % | 5.570 |
-| drag (max+min)/2 | 457.4 | 460.5 | −0.7 % | 458.5 |
-| drag amplitude | 25.79 | 27.74 | −7.0 % | 28.6 |
-| lift (max+min)/2 | 1.03 | 2.50 | −59 % | 0.99 |
-| lift amplitude | 162.6 | 153.9 | +5.7 % | 194.7 |
+**References:**
+- **Failer & Richter (2020)**, level 6, Δt = 0.001 s: the paper's FSI3 reference (category B). The paper tabulates it for the five quantities shown.
+- **Featflow:** the FSI3 table at level 4+0 (15 872 elements, Δt = 0.00025 s) on the Featflow FSI benchmark pages (https://wwwold.mathematik.tu-dortmund.de/~featflow/en/benchmarks/cfdbenchmarking/fsi_benchmark/fsi_tests/fsi_fsi_tests.html), as used by the solids4foam verification (`HronTurek_verification_references.json`). These are not the summary values of Turek & Hron (2006).
+- **solids4foam 1x′:** `paper-data/hronturek_fsi3_post671/corrected_sequence_post671.csv`, row `std1x` (Δt 5e-4, after solids4foam #671).
+
+| Quantity | This run | Failer & Richter | vs F&R | Featflow | vs Featflow | solids4foam 1x′ | vs solids4foam |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| u_x (max+min)/2 | −2.750 | −2.890 | +4.9 % | −2.88 | +4.5 % | −2.752 | −0.1 % |
+| u_x amplitude | 2.630 | 2.729 | −3.6 % | 2.72 | −3.3 % | 2.651 | −0.8 % |
+| u_y (max+min)/2 | 1.655 | — | | 1.47 | +12.6 % | 1.636 | +1.1 % |
+| u_y amplitude | 34.16 | 35.03 | −2.5 % | 34.99 | −2.4 % | 34.00 | +0.5 % |
+| frequency | 5.522 | — | | 5.46 | +1.1 % | 5.578 | −1.0 % |
+| drag (max+min)/2 | 457.4 | 460.5 | −0.7 % | 460.5 | −0.7 % | 457.9 | −0.1 % |
+| drag amplitude | 25.79 | — | | 27.74 | −7.0 % | 27.43 | −6.0 % |
+| lift (max+min)/2 | 1.03 | — | | 2.50 | −59 % | 0.89 | (+0.14 N/m) |
+| lift amplitude | 162.6 | 156.6 | +3.8 % | 153.9 | +5.7 % | 191.3 | −15.0 % |
+
+Signs: (this run − reference) / |reference|.
 
 - **Periodicity:** over the five periods, the amplitudes vary by at most 0.002 mm (u_x), 0.024 mm (u_y), 0.016 N/m (drag) and 0.084 N/m (lift).
-- **Against solids4foam at the same fluid level:** the displacements, the frequency, the drag mean and the lift mean agree to within 4.5 %. The force amplitudes differ more: drag −9.8 %, lift −16.5 %. The two runs differ in the solid discretisation (CalculiX finite elements against finite volumes), the time step and the solid time integrator. With one level, these cannot be separated. The solids4foam 2x′ time-step triplet (Δt 1e-3/5e-4/2.5e-4) puts the temporal error in the force amplitudes at ≤ 0.04 of the 2x′→4x′ change, which suggests that the time step alone does not explain the difference, but this was not tested here.
+- **Against solids4foam at the same fluid level:** the displacements agree to within 1.1 % (u_x and the u_y amplitude to within 0.8 %), and the frequency and drag mean to within 1.0 %. The force amplitudes differ more: drag −6.0 %, lift −15.0 %. The two runs differ in the solid discretisation (CalculiX finite elements against finite volumes), the time step, the solid time integrator and the flag pressure condition. With one level, these cannot be separated. The solids4foam 2x′ time-step triplet (Δt 1e-3/5e-4/2.5e-4) puts the temporal error in the force amplitudes at ≤ 0.04 of the 2x′→4x′ change, which suggests that the time step alone does not explain the difference, but this was not tested here.
+- **Against the references:** at this coarse level, the displacements and the lift amplitude are 2.5–4.9 % from Failer & Richter and the drag mean 0.7 %. The solids4foam 1x′ level is similarly far from them; its lift amplitude is 22 % above Failer & Richter.
 - **Lift mean:** a small difference of large numbers; both codes are far from Featflow at this level.
 
 ## Cost and coupling
@@ -86,7 +95,7 @@ Each test restarts the coupled stage from the same t = 2 s state, changes one th
 | Change from the specified set-up | File in `instability/` | Windows | Growth per step |
 |---|---|---:|---:|
 | none (Δt 5e-4, α −0.05) | `base` | 22 † | 1.38 |
-| `zeroGradient` flag pressure | `zerograd` | 22 † | 1.38 (s_n the same to 3 digits) |
+| `zeroGradient` flag pressure (in effect the same condition, see below) | `zerograd` | 22 † | 1.38 (s_n the same to 3 digits) |
 | Euler instead of BDF2 in the fluid | `euler` | 41 | 1.33 |
 | RBF support 0.01 m instead of 0.03 m | `rbf001` | 22 † | 1.35 |
 | HHT α −0.3 | `alpha03` | 41 | 1.15 |
@@ -101,19 +110,21 @@ The 4 000-window production run at Δt 1e-3, α −1/3 confirms the last row: s_
 
 ### What the tests show
 
-- **Not the wall-pressure condition:** `zeroGradient` and `fixedFluxPressure` grow at the same rate.
+- **The wall-pressure condition was not tested.** `fixedFluxPressure` here gives dp/dn = 0, the same as `zeroGradient`, which is why `base` and `zerograd` match. Neither includes the −n·a_wall term of `movingWallPressure`, so whether that term changes the instability is open.
 - **Not the fluid time scheme:** first-order Euler grows almost as fast as BDF2.
 - **Not the mapping:** a support radius of 0.01 m instead of 0.03 m makes no difference.
 - **Damping in the solid helps but does not cure it at Δt 5e-4.** Even α −1/3 leaves a growth of ×1.15 per step.
 - **The instability gets worse as Δt decreases.** At Δt 1e-3 it is marginal with α −0.05 and decays with α −1/3.
 
-A plausible explanation, not proved here, is a kinematic mismatch at the interface:
+One plausible explanation, not proved here, is a kinematic mismatch at the interface:
 
 - CalculiX advances the flag with HHT, a Newmark-type scheme, which carries its own velocity and acceleration.
 - The fluid gets the wall velocity and acceleration by differentiating, with BDF2, the displacement it receives.
 - With ρ_s = ρ_f, the added-mass force acting on that mismatch scales like 1/Δt², so a smaller Δt makes it worse.
 
 solids4foam uses BDF2 on both sides and is consistent by construction. CalculiX offers only HHT for implicit dynamics, so the two sides cannot be made to match with this solver pair.
+
+The missing wall-acceleration term in the flag pressure is a second candidate: it is the term that carries the wall acceleration into the pressure, and so into the added-mass force. These runs cannot distinguish the two explanations.
 
 ### Effect of α = −1/3 on the physical mode
 
@@ -133,14 +144,27 @@ At the flapping frequency, α = −1/3 changes the amplitude by about 5e-6 per p
 - `histories/level1-dt1e-3.csv`: u_x(A), u_y(A) (m), drag and lift (N/m) per step, 0–6 s (displacements are zero during the rigid start).
 - `fsi3_precice_level1.png`: the histories and the instability tests (`scripts/plot-fsi3.py`).
 - `instability/*-PointA.log`: the point-A watch-point logs of the diverged run and the tests.
+- `raw/level1-dt1e-3/` (xz-compressed): the raw outputs of the production run:
+  - `forces/0/force.dat.xz` (rigid start) and `forces/2/force.dat.xz` (coupled): OpenFOAM `forces` on `plate` + `cylinder`, every coupling iteration (the history CSV keeps the last entry per step);
+  - `precice-Solid-watchpoint-PointA.log.xz`: the preCICE watch-point at A (time from the coupling start).
 - `case/`: the template: preCICE config, CalculiX `plate.inp` (α −1/3) and `config.yml`, and the fluid `0/`, `constant/` and `system/`. The `@DT@`/`@TOL@` placeholders and the meshes are filled in by `scripts/setup-case.py`.
 - `scripts/`:
   - `setup-case.py LEVEL OUTDIR [SOLID_LEVEL] [DT] [TOL]`: generates a case (defaults: solid level 2 × LEVEL, Δt 1e-3, tolerance 1e-5). It calls `ht_mesh_family.py`, copied from solids4foam `verification/hronturek-production`.
   - `run-case.sh CASEDIR [NP]`: rigid start, then the coupled run, with timing.
   - `evaluate.py CASEDIR [T_END] [OUT_PREFIX]`: the QoIs; with `OUT_PREFIX` it also writes the results and history CSVs.
   - `quick-test.sh`, `instability-growth.py`, `hht-damping.py`: the instability tests and the damping estimate.
+  - `reduce-fluid-log.py`: the reduction of the coupled fluid log.
+  - `plot-fsi3.py`: the figure.
   - `env-precice.sh`: the environment.
-- `logs/level1-dt1e-3/`: `log.run`, `log.environment` and the preCICE iteration log. `logs/level1-dt5e-4-diverged/`: the diverged run. The solver logs and field data are not included (available on request).
+- `logs/level1-dt1e-3/`:
+  - `log.run`, `log.environment`;
+  - fluid: `log.blockMesh`, `log.checkMesh`, `log.decomposePar`, `log.pimpleFoam.ramp.xz` (0–2 s, complete), and the coupled `pimpleFoam` log in two reduced forms (`scripts/reduce-fluid-log.py`). The complete log is 442 MB (55 MB compressed), because the fluid solves each step once per coupling iteration:
+    - `log.pimpleFoam.coupled.converged.xz`: every line of the last (converged) coupling iteration of each of the 4 000 steps;
+    - `log.pimpleFoam.coupled.iterations.xz`: one line per coupling iteration (94 657): time, window, iteration, Courant numbers, last pressure residual and timing;
+  - solid: `log.ccx.xz` (complete) and `plate.sta.xz`;
+  - preCICE: `precice-Solid-iterations.log`, `precice-Solid-convergence.log.xz`, `precice-Fluid-iterations.log`.
+- `logs/level1-dt5e-4-diverged/`: the diverged run.
+- The complete coupled fluid log and the field data are available on request.
 
 To reproduce:
 
@@ -152,3 +176,9 @@ python3 scripts/evaluate.py /path/to/level1
 ```
 
 For the specified set-up (the diverging run), pass `2 5e-4` as SOLID_LEVEL and DT and set `ALPHA=-0.05` in `plate.inp`.
+
+## References
+
+- Failer, L. and Richter, T. (2020). A parallel Newton multigrid framework for monolithic fluid-structure interactions. *Journal of Scientific Computing* 82(2), 28. doi:10.1007/s10915-019-01113-y (bibliography key `Failer2020`).
+- Featflow FSI benchmark tables, https://wwwold.mathematik.tu-dortmund.de/~featflow/en/benchmarks/cfdbenchmarking/fsi_benchmark/fsi_tests/fsi_fsi_tests.html (`FeatflowFSI`).
+- Turek, S. and Hron, J. (2006). Proposal for numerical benchmarking of fluid-structure interaction between an elastic object and laminar incompressible flow. In *Fluid-Structure Interaction*, LNCSE 53, 371–385 (`Turek2006`); the benchmark definition.

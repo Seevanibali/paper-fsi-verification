@@ -1,0 +1,106 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _87ed40d256-20251219 OPENFOAM=2512 version=v2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : decomposePar -force
+Date   : Nov 17 2026
+Time   : 17:29:30
+Host   : ECORE
+PID    : 1351256
+I/O    : uncollated
+Case   : /home/balis/OpenFOAM/balis-v2512/precice/hron-turek-fsi3/level1-dt1e-3/fluid-openfoam
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+
+
+Decomposing mesh
+
+Create mesh
+
+Calculating distribution of cells
+Decomposition method scotch [4] (region region0)
+
+Finished decomposition in 0.01 s
+
+Calculating original mesh data
+
+Distributing cells to processors
+
+Distributing faces to processors
+
+Distributing points to processors
+
+Constructing processor meshes
+
+Processor 0
+    Number of cells = 2927
+    Number of points = 6144
+    Number of faces shared with processor 1 = 35
+    Number of faces shared with processor 3 = 28
+    Number of processor patches = 2
+    Number of processor faces = 63
+    Number of boundary faces = 6079
+
+Processor 1
+    Number of cells = 2928
+    Number of points = 6144
+    Number of faces shared with processor 0 = 35
+    Number of faces shared with processor 3 = 29
+    Number of processor patches = 2
+    Number of processor faces = 64
+    Number of boundary faces = 6078
+
+Processor 2
+    Number of cells = 2954
+    Number of points = 6130
+    Number of faces shared with processor 3 = 62
+    Number of processor patches = 1
+    Number of processor faces = 62
+    Number of boundary faces = 6066
+
+Processor 3
+    Number of cells = 2955
+    Number of points = 6136
+    Number of faces shared with processor 0 = 28
+    Number of faces shared with processor 1 = 29
+    Number of faces shared with processor 2 = 62
+    Number of processor patches = 3
+    Number of processor faces = 119
+    Number of boundary faces = 6015
+
+Number of processor faces = 154
+Max number of cells = 2955 (0.476028561714% above average 2941)
+Max number of processor patches = 3 (50% above average 2)
+Max number of faces between processors = 119 (54.5454545455% above average 77)
+
+Time = 0
+Using dynamicCode for patch inlet on field U at line 20 in "/home/balis/OpenFOAM/balis-v2512/precice/hron-turek-fsi3/level1-dt1e-3/fluid-openfoam/0/U/boundaryField/inlet"
+Could not load "/home/balis/OpenFOAM/balis-v2512/precice/hron-turek-fsi3/level1-dt1e-3/fluid-openfoam/dynamicCode/platforms/linux64GccDPInt32Opt/lib/libfsi3ParabolicInlet_163941d57553fb2de6ffb7d2542be66c5cdb3e56.so"
+/home/balis/OpenFOAM/balis-v2512/precice/hron-turek-fsi3/level1-dt1e-3/fluid-openfoam/dynamicCode/platforms/linux64GccDPInt32Opt/lib/libfsi3ParabolicInlet_163941d57553fb2de6ffb7d2542be66c5cdb3e56.so: cannot open shared object file: No such file or directory
+Creating new library in "dynamicCode/fsi3ParabolicInlet/platforms/linux64GccDPInt32Opt/lib/libfsi3ParabolicInlet_163941d57553fb2de6ffb7d2542be66c5cdb3e56.so"
+Invoking wmake libso /home/balis/OpenFOAM/balis-v2512/precice/hron-turek-fsi3/level1-dt1e-3/fluid-openfoam/dynamicCode/fsi3ParabolicInlet
+wmake libso /home/balis/OpenFOAM/balis-v2512/precice/hron-turek-fsi3/level1-dt1e-3/fluid-openfoam/dynamicCode/fsi3ParabolicInlet
+    ln: ./lnInclude
+    dep: fixedValueFvPatchFieldTemplate.C
+    Ctoo: fixedValueFvPatchFieldTemplate.C
+    link: /home/balis/OpenFOAM/balis-v2512/precice/hron-turek-fsi3/level1-dt1e-3/fluid-openfoam/dynamicCode/fsi3ParabolicInlet/../platforms/linux64GccDPInt32Opt/lib/libfsi3ParabolicInlet_163941d57553fb2de6ffb7d2542be66c5cdb3e56.so
+
+Processor 0: field transfer
+Processor 1: field transfer
+Processor 2: field transfer
+Processor 3: field transfer
+
+End
+
