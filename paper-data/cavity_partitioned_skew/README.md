@@ -51,7 +51,10 @@ The linear F_y limit here uses the six-digit levels 2 and 3. With the
 four-decimal levels it is −5.260619.
 
 The skew-corrected limit minus each other solution's limit, relative to that
-solution:
+solution (negative: solids4foam magnitude larger). The SU2 limits are from
+`paper-data/cavity_su2_calculix/comparison/reference_limits.csv` on the
+branch `DylanArmfield:evidence/cavity-su2-calculix` of pfv#102, which is not
+yet merged:
 
 | Solution | u_y | F_y |
 |---|---:|---:|
@@ -62,7 +65,7 @@ solution:
 | ANSYS | +5.15 % | +0.26 % |
 | COMSOL (plateau) | +1.04 % | +0.71 % |
 
-The skew correction moves the levels 2–4 limits by +0.037 % (u_y) and
+The skew correction moves the levels 2–4 limits by +0.036 % (u_y) and
 +0.050 % (F_y), i.e. to smaller magnitudes.
 
 ## Provenance
@@ -116,8 +119,10 @@ The skew correction moves the levels 2–4 limits by +0.037 % (u_y) and
   the solver tolerances together, so the cause is not separated.
 - **Linear, same Δt range (0.5 to 0.125 s):** the changes are at most
   0.02 % in both (rows in `mesh_convergence_rows.csv`).
-- **Status:** the paper no longer quotes a pseudo-time-step sensitivity for
-  this case.
+- **Status:** the earlier sequence's pseudo-time-step bound (0.014 %) and
+  its strict-versus-default coupling-test check (0.02 %) are no longer
+  quoted. The paper quotes the level-1 change for Δt = 0.5 to 0.125 s
+  (≤ 0.03 %) and flags the Δt = 0.0625 s change as open.
 
 ## Earlier values kept elsewhere
 

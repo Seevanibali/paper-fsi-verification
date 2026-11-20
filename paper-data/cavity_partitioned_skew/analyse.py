@@ -16,7 +16,8 @@ FS = 1.25
 # the top surface, m; F_y per unit depth, N/m).
 OTHERS = [
     ("SU2 + CalculiX (D. Armfield, pfv#102)", -0.2405588, -5.257784,
-     "paper-data/cavity_su2_calculix/comparison/reference_limits.csv (pfv#102)"),
+     "paper-data/cavity_su2_calculix/comparison/reference_limits.csv on "
+     "DylanArmfield:evidence/cavity-su2-calculix (pfv#102; not yet merged)"),
     ("FEniCSx monolithic, M1", -0.2405441802, -5.257801491,
      "paper-data/fenicsx_cavityflexiblebottom/data/coupled_orders.csv"),
     ("solids4foam quasi-monolithic #618", -0.24058, -5.257741,
