@@ -40,6 +40,7 @@ The solver paper (paper-monolithic-fsi) keeps a matching register for the quasi-
 | 13 | `#codeStream` static cache on macOS | tutorials | NaN or FPE, non-deterministic | Issue filed (#711) |
 | 14 | Units of the interface-displacement log line | output | misread as metres | Open |
 | 15 | Benchmark definitions in tutorials | tutorials | wrong reference comparison | Open |
+| 16 | Steady state depends on the pseudo-time step | partitioned fluid | up to 0.2 % on coarse meshes | Open |
 
 ## Entries
 
@@ -177,3 +178,16 @@ Set-up details that cost time because the tutorial or its reference did not say 
 - **FSI3:** ring+box meshes as in entry 10. `linearUpwind grad(U)` convection and the coupling tolerances of the shared set-up.
 
 **State:** Open. Each tutorial README should state these.
+
+### 16. Steady state depends on the pseudo-time step
+
+- **Found:** 2026-11-21, cavityFlexibleBottom. This was the follow-up to entry 1.
+- **What goes wrong:** a pseudo-transient steady solution from `pimpleFluid` depends on Δt. The Rhie–Chow (pressure–velocity coupling) term carries the coefficient rAU, which depends on Δt.
+  - On level 1, reducing Δt from 0.5 to 0.0625 s changes F_y by 0.18 % with skew correction and by 0.07 % without.
+  - The dependence vanishes rapidly under refinement: 0.03 % on level 2 and 0.001 % on level 3.
+  - The solver tolerances do not matter (≤ 0.02 %).
+  - A study that scales Δt with h mixes this into the mesh convergence. Here it is harmless: a fixed-Δt sequence extrapolates within 0.003 %.
+- **Evidence:** `paper-data/cavity_partitioned_skew/README.md`, section "Δt check".
+- **Right choice:** in a steady study, state Δt per level and check one level at a second Δt. On coarse meshes, a "steady" result is not Δt-independent.
+- **State:** Open (practice).
+- **Robust fix to consider:** a note in the steady FSI tutorials' READMEs. Longer term, a Δt-independent Rhie–Chow coefficient for pseudo-transient steady runs (as in steady SIMPLE), or a steady fluid model for steady FSI.
