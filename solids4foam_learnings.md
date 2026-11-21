@@ -25,7 +25,7 @@ The solver paper (paper-monolithic-fsi) keeps a matching register for the quasi-
 
 | # | Topic | Area | Effect if wrong | Status |
 |---:|---|---|---|---|
-| 1 | Continuity-flux interpolation in `pimpleFluid` | partitioned fluid | 0.05% F_y bias, slowly converging (cavity) | Open |
+| 1 | Continuity-flux interpolation in `pimpleFluid` | partitioned fluid | 0.05% F_y bias, slowly converging (cavity) | Tutorial only (#743, open) |
 | 2 | `fixedFluxPressure` on a moving FSI wall | partitioned fluid | silently zeroGradient | Open |
 | 3 | Interface pressure condition | partitioned fluid | O(h) wall pressure; transients | Issue filed (#721) |
 | 4 | Interface viscous traction form | both couplings | O(1) on a deforming wall | Open |
@@ -54,9 +54,10 @@ The solver paper (paper-monolithic-fsi) keeps a matching register for the quasi-
   - Adding only `flux(HbyA) skewCorrected linear;` moves the levels 1–3 F_y limit from −5.26050 (+0.052% from SU2) to −5.25695 (−0.016%; GCI 0.14%).
   - The quasi-monolithic levels 1–3 limit is −5.25742.
   - Agent B's catalogue (paper-monolithic-fsi `paper-data/a2_discretisation_differences.md`, D4) shows the quasi-monolithic and partitioned results agree to below 0.001% when both use linear.
-  - The level-4 confirmation is running.
+  - Level 4 confirms it. The levels 2–4 limits are −0.240583 m / −5.257947 N/m (u_y / F_y; orders 1.98 / 1.86, GCI 0.31% / 0.045%), against −0.240671 / −5.260619 with `linear`. They are 0.010% / 0.003% from SU2, 0.016% / 0.003% from FEniCSx and 0.001% / 0.004% from the quasi-monolithic #618 solution.
+  - Level 4 used `nOuterCorr 40` and fluid linear-solver tolerances of 1e-8, as the earlier level 4 did. Data: `paper-data/cavity_partitioned_skew/`.
 - **Right choice:** skew-corrected interpolation of the continuity flux on any mesh that moves or deforms.
-- **State:** Open. The cavity tutorial change is planned as a solids4foam PR.
+- **State:** Tutorial only (solids4foam #743, open). The paper's cavity sequence uses the skew-corrected flux.
 - **Robust fix to consider:** make `pimpleFluid` use the `interpolate(U)` scheme for `flux(HbyA)` when no explicit entry exists, or warn when a moving mesh runs on the `default linear` fallback. Check the other moving-mesh tutorials, such as FSI3 and the 3-D tube.
 
 ### 2. `fixedFluxPressure` on a moving FSI wall
