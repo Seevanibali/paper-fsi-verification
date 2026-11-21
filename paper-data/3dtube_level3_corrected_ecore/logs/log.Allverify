@@ -1,0 +1,4 @@
+Started: Fri Nov 20 04:29:49 PM GMT 2026
+Running robin mesh level 3 in /home/balis/OpenFOAM/balis-v2512/solids4foam-206437983/tutorials/fluidSolidInteraction/3dTube/verification/work/robin_backward_mesh3
+ERROR: /home/balis/OpenFOAM/balis-v2512/solids4foam-206437983/tutorials/fluidSolidInteraction/3dTube/verification/work/robin_backward_mesh3/postProcessing/0/solidPointDisplacement_verificationWallZ050.dat has 3200 time levels, expected 3200 at dt = 6.25e-06
+Finished: Fri Nov 20 11:27:36 PM GMT 2026 (exit 2)

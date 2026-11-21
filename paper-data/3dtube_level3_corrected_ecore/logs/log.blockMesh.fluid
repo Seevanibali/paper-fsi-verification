@@ -1,0 +1,93 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _87ed40d256-20251219 OPENFOAM=2512 version=v2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : blockMesh -region fluid
+Date   : Nov 20 2026
+Time   : 16:29:50
+Host   : ECORE
+PID    : 2968420
+I/O    : uncollated
+Case   : /home/balis/OpenFOAM/balis-v2512/solids4foam-206437983/tutorials/fluidSolidInteraction/3dTube/verification/work/robin_backward_mesh3
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+
+Generating mesh for region fluid
+Creating block mesh from "system/fluid/blockMeshDict"
+Creating block edges
+No non-planar block faces defined
+Creating topology blocks
+
+Creating topology patches - from patches section
+
+Reading physicalType from existing boundary file
+
+Default patch type set to empty
+
+Creating block mesh topology
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 3
+		Number of boundary faces : 12
+		Number of defined boundary faces : 12
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+Creating block offsets
+Creating merge list (topological search)...
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale (1 1 1)
+    Block 0 cell size :
+        i : 8.535e-05 .. 8.535e-05
+        j : 8.535e-05 .. 8.535e-05
+        k : 0.00015625 .. 0.00015625
+
+    Block 1 cell size :
+        i : 7.93e-05 .. 7.93e-05
+        j : 7.22019e-05 .. 7.22019e-05
+        k : 0.00015625 .. 0.00015625
+
+    Block 2 cell size :
+        i : 7.22019e-05 .. 7.22019e-05
+        j : 7.93e-05 .. 7.93e-05
+        k : 0.00015625 .. 0.00015625
+
+No patch pairs to merge
+
+Writing polyMesh with 0 cellZones
+----------------
+Mesh Information
+----------------
+  boundingBox: (0 0 0) (0.005 0.005 0.05)
+  nPoints: 1059621
+  nCells: 1024000
+  nFaces: 3107200
+  nInternalFaces: 3036800
+----------------
+Patches
+----------------
+  patch 0 (start: 3036800 size: 3200) name: outlet
+  patch 1 (start: 3040000 size: 3200) name: inlet
+  patch 2 (start: 3043200 size: 25600) name: wall
+  patch 3 (start: 3068800 size: 19200) name: symmetry-x
+  patch 4 (start: 3088000 size: 19200) name: symmetry-y
+
+End
+

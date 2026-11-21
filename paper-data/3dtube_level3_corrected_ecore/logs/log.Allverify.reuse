@@ -1,0 +1,28 @@
+Started: Sat Nov 21 12:16:53 AM GMT 2026
+Reusing robin mesh level 3 in /home/balis/OpenFOAM/balis-v2512/solids4foam-206437983/tutorials/fluidSolidInteraction/3dTube/verification/work/robin_backward_mesh3
+## Mesh study (mesh and time step refined together; robin, backward)
+
+- Result: FAIL
+- Analytical wave-speed estimates (m/s): mk_inner_radius 5.477, mk_mean_radius 5.222, mk_inner_radius_tethered 5.742, thick_wall 5.066, thick_wall_inertia 4.811
+
+| Level | Fluid cells | Solid cells | Δt (s) | Cores | u_r,max(A) (mm) | t(u_r,max) (ms) | u_z,min(A) (mm) | u_r,min(A), t > 14 ms (mm) | t_arr(A) (ms) | c_wall (m/s) | c_p (m/s) | Mean FSI iter. | Clock (s) |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 3 | 1024000 | 409600 | 6.25e-06 | 32 | 0.15831 | 7.251 | -0.08570 | -0.09591 | 5.823 | 5.067 | 4.625 | 3.18 | 25060 |
+
+Checks:
+
+- PASS: all 1 run(s) completed, and every time step met the robin convergence criteria
+- FAIL: at least two levels are required
+- PASS: pressure-front speed 4.625 m/s vs the thick_wall_inertia estimate 4.811 m/s (approximate): 3.9% <= 10%
+- PASS: ur_max_A_m 0.0001583 vs Tukovic et al. (2018) 0.0001569 (vector graphics): 0.9% <= 5%
+- PASS: t_ur_max_A_s 0.007251 vs Tukovic et al. (2018) 0.00723 (vector graphics): 0.3% <= 3%
+- u_r(A) history vs Tukovic et al. (2018): largest difference 2.2% of the published peak (information)
+- u_r(A) history vs Lozovskiy et al. (2019): largest difference 34.7% of the published peak (information)
+- u_r(A) history vs Eken (2016): largest difference 39.6% of the published peak (information)
+
+- Data: `mesh_robin_backward.csv`
+
+Plot: /home/balis/OpenFOAM/balis-v2512/solids4foam-206437983/tutorials/fluidSolidInteraction/3dTube/verification/postProcessing/mesh_robin_backward.png
+Plot: /home/balis/OpenFOAM/balis-v2512/solids4foam-206437983/tutorials/fluidSolidInteraction/3dTube/verification/postProcessing/mesh_robin_backward.pdf
+Summary: /home/balis/OpenFOAM/balis-v2512/solids4foam-206437983/tutorials/fluidSolidInteraction/3dTube/verification/postProcessing/verification_summary.md
+Finished: Sat Nov 21 12:16:54 AM GMT 2026 (exit 0)

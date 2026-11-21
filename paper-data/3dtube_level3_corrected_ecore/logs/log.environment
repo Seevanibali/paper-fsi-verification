@@ -1,0 +1,18 @@
+Fri Nov 20 04:29:49 PM GMT 2026
+ECORE
+CPU(s):                                  64
+Model name:                              AMD Ryzen Threadripper 9970X 32-Cores
+CPU(s) scaling MHz:                      38%
+               total        used        free      shared  buff/cache   available
+Mem:             125          10          78           0          37         114
+solids4foam 206437983 + meshes from 9b52c2303
+ M tutorials/fluidSolidInteraction/3dTube/system/fluid/blockMeshDict
+ M tutorials/fluidSolidInteraction/3dTube/system/solid/blockMeshDict
+?? tutorials/fluidSolidInteraction/3dTube/verification/log.environment
+OpenFOAM v2512, mpirun (Open MPI) 4.1.6, gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+PETSC_DIR /opt/openfoam/ThirdParty-v2512/platforms/linux64GccDPInt32/petsc-3.21.2
+/home/balis/OpenFOAM/balis-v2512/platforms-s4f-206437983/linux64GccDPInt32Opt/bin/solids4Foam
+OPENBLAS_NUM_THREADS=1
+OMP_NUM_THREADS=1
+load at start:  16:29:49 up 70 days,  6:48,  4 users,  load average: 0.26, 0.12, 0.09
+load at end:  23:27:36 up 70 days, 13:46,  4 users,  load average: 32.15, 32.12, 32.14
