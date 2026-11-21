@@ -104,25 +104,62 @@ The skew correction moves the levels 2–4 limits by +0.036 % (u_y) and
   solids4foam PR #743 and in the reply on pfv#102. F_y was recorded to four
   decimals only, and the run directory is not in `cavgap`.
 
-## Δt check on level 1 (not resolved)
+## Δt check (resolved 2026-11-21)
 
-| Δt (s) | settings | u_y (m) | F_y (N/m) |
-|---:|---|---:|---:|
-| 0.5 | levels 1–3 | −0.204831 | −5.160695 |
-| 0.25 | levels 1–3 | −0.204842 | −5.160978 |
-| 0.125 | levels 1–3 | −0.204884 | −5.162218 |
-| 0.0625 | level 4 | −0.205135 | −5.169844 |
+The steady state depends on the pseudo-time step, through the Δt-dependent
+coefficient of the pressure–velocity coupling term. It does not depend on
+the solver tolerances. The dependence vanishes rapidly under refinement.
 
-- **Skew-corrected:** from Δt = 0.5 to 0.125 s the steady state changes by
-  0.026 % (u_y) and 0.030 % (F_y). At Δt = 0.0625 s, with the level-4
-  solver settings, it changes by 0.15 % and 0.18 %. That run changes Δt and
-  the solver tolerances together, so the cause is not separated.
-- **Linear, same Δt range (0.5 to 0.125 s):** the changes are at most
-  0.02 % in both (rows in `mesh_convergence_rows.csv`).
-- **Status:** the earlier sequence's pseudo-time-step bound (0.014 %) and
-  its strict-versus-default coupling-test check (0.02 %) are no longer
-  quoted. The paper quotes the level-1 change for Δt = 0.5 to 0.125 s
-  (≤ 0.03 %) and flags the Δt = 0.0625 s change as open.
+Skew-corrected runs:
+
+| Level | Δt (s) | settings | u_y (m) | F_y (N/m) |
+|---:|---:|---|---:|---:|
+| 1 | 0.5 | default | −0.204831 | −5.160695 |
+| 1 | 0.5 | 1e-8, nOuterCorr 40 | −0.204791 | −5.159491 |
+| 1 | 0.25 | default | −0.204842 | −5.160978 |
+| 1 | 0.125 | default | −0.204884 | −5.162218 |
+| 1 | 0.0625 | default | −0.205141 | −5.170031 |
+| 1 | 0.0625 | 1e-8, nOuterCorr 40 | −0.205135 | −5.169844 |
+| 2 | 0.5 | default | −0.231281 | −5.233737 |
+| 2 | 0.25 | default (sequence) | −0.231268 | −5.233332 |
+| 2 | 0.125 | default | −0.231209 | −5.231570 |
+| 2 | 0.0625 | default | −0.231216 | −5.231802 |
+| 3 | 0.125 | default (sequence) | −0.238225 | −5.251155 |
+| 3 | 0.0625 | default | −0.238223 | −5.251101 |
+
+Linear runs:
+
+| Level | Δt (s) | settings | u_y (m) | F_y (N/m) |
+|---:|---:|---|---:|---:|
+| 1 | 0.5 | default | −0.204573 | −5.152815 |
+| 1 | 0.0625 | 1e-8, nOuterCorr 40 | −0.204687 | −5.156283 |
+| 3 | 0.125 | default | −0.238403 | −5.256547 |
+| 3 | 0.0625 | default | −0.238409 | −5.256743 |
+
+Findings:
+
+- **Tolerances:** with Δt fixed, they change the result by at most 0.02 %.
+- **Δt:** reducing it to 0.0625 s changes F_y by 0.18 % on level 1,
+  0.03 % on level 2 and 0.001 % on level 3. The change is larger with skew
+  correction (linear level 1: 0.07 %).
+- **Fixed Δt 0.0625 s on levels 2–4:**
+  - u_y: p 1.99, limit −0.240579;
+  - F_y: p 1.96, limit −5.257798, 0.0003 % from SU2.
+  - The scaled-Δt sequence (p 1.98 / 1.86; −0.240583 / −5.257947) agrees to
+    within 0.003 %.
+
+The diagnostic runs are in `/Users/philipc/claude-runs/cavgap/`:
+
+- `tolA`, `tolB`: level 1 at Δt 0.5 with the 1e-8 settings, and at Δt 0.0625
+  with the default settings;
+- `tolC`: linear level 1 at Δt 0.0625 with the 1e-8 settings;
+- `dtL2a`, `dtL2b`: level 2 at Δt 0.125 and 0.0625;
+- `dtL3a`, `dtL3lin`: level 3 at Δt 0.0625, skew-corrected and linear.
+
+Each was run with `solids4Foam` directly, in a copy of the corresponding
+driver `meshN` case, with only `deltaT` (and, where stated, the tolerances)
+changed. The values are the last `force.dat` and `solidPointDisplacement`
+rows, at t = 200 s.
 
 ## Earlier values kept elsewhere
 
